@@ -23,6 +23,8 @@
 #include <chrono>
 #include <string>
 
+using namespace std;
+
 // Hamilton (1989) parameters - 1952:II to 1984:IV sample
 constexpr double P = 0.9008; // Pr[S_t=1 | S_{t-1}=1]
 constexpr double Q = 0.7606; // Pr[S_t=0 | S_{t-1}=0]
@@ -40,7 +42,7 @@ int main(int argc, char *argv[])
 {
     const char *output_path = (argc > 1) ? argv[1] : "./gnp_data_created.csv";
     unsigned int seed = (argc > 2) ? static_cast<unsigned int>(std::stoul(argv[2])) : 42u;
-    long long n_samples = (argc > 3) ? std::stoll(argv[3]) : 1000001LL;
+    long long n_samples = (argc > 3) ? std::stoll(argv[3]) : 100LL;
     bool write_output = (std::string(output_path) != "none");
 
     if (n_samples < WINDOW_SIZE + 1)
@@ -51,15 +53,15 @@ int main(int argc, char *argv[])
 
     auto t_start = std::chrono::high_resolution_clock::now();
 
-    std::mt19937 rng(seed);
-    std::uniform_real_distribution<double> unif(0.0, 1.0);
-    std::normal_distribution<double> norm(0.0, SIGMA);
+    mt19937 rng(seed);
+    uniform_real_distribution<double> unif(0.0, 1.0);
+    normal_distribution<double> norm(0.0, SIGMA);
 
     // Preallocate (matches Python DataFrame columns: t, dy, S, mu)
-    std::vector<int> t(n_samples);
-    std::vector<double> dy(n_samples);
-    std::vector<int> S(n_samples);
-    std::vector<double> mu(n_samples);
+    vector<int> t(n_samples);
+    vector<double> dy(n_samples);
+    vector<int> S(n_samples);
+    vector<double> mu(n_samples);
 
     // Initial values (rows 0..3)
     dy[0] = 1.2;
@@ -106,30 +108,30 @@ int main(int argc, char *argv[])
         S[i] = s;
     }
 
-    auto t_compute_done = std::chrono::high_resolution_clock::now();
+    auto t_compute_done = chrono::high_resolution_clock::now();
 
     // Write CSV (matches pandas to_csv format: index,t,dy,S,mu)
     if (write_output)
     {
-        std::ofstream out(output_path);
-        out << ",t,dy,S,mu\n";
-        out << std::fixed << std::setprecision(16);
+        ofstream out(output_path);
+        out << "dy,S,mu\n";
+        out << fixed << setprecision(16);
         for (long long i = 0; i < n_samples; ++i)
         {
-            out << i << "," << t[i] << "," << dy[i] << "," << S[i] << "," << mu[i] << "\n";
+            out << dy[i] << "," << S[i] << "," << mu[i] << "\n";
         }
         out.close();
     }
 
-    auto t_end = std::chrono::high_resolution_clock::now();
-    auto compute_ms = std::chrono::duration<double, std::milli>(t_compute_done - t_start).count();
-    auto total_ms = std::chrono::duration<double, std::milli>(t_end - t_start).count();
+    auto t_end = chrono::high_resolution_clock::now();
+    auto compute_ms = chrono::duration<double, milli>(t_compute_done - t_start).count();
+    auto total_ms = chrono::duration<double, milli>(t_end - t_start).count();
 
-    std::cout << "Generated " << n_samples << " samples in " << total_ms / 1000.0 << " s total";
+    cout << "Generated " << n_samples << " samples in " << total_ms / 1000.0 << " s total";
     if (write_output)
-        std::cout << " (compute: " << compute_ms / 1000.0 << " s, I/O: " << (total_ms - compute_ms) / 1000.0 << " s)";
-    std::cout << "\n  -> " << (n_samples / (compute_ms / 1000.0)) / 1e6 << " M samples/sec (compute only)\n";
+        cout << " (compute: " << compute_ms / 1000.0 << " s, I/O: " << (total_ms - compute_ms) / 1000.0 << " s)";
+    cout << "\n  -> " << (n_samples / (compute_ms / 1000.0)) / 1e6 << " M samples/sec (compute only)\n";
     if (write_output)
-        std::cout << "  -> " << output_path << "\n";
+        cout << "  -> " << output_path << "\n";
     return 0;
 }
