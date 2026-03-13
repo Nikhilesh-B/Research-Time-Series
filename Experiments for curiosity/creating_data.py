@@ -1,11 +1,13 @@
 import random
 import pandas as pd
+from pathlib import Path
 
 N_SAMPLES = 100_000
 X_MIN = -100.0
 X_MAX = 100.0
 NOISE = 4.0
-OUTPUT_PATH = "./raw_data"
+OUTPUT_PATH = Path(__file__).parent / "raw_data.csv"
+
 
 def generate_data():
     x_range = X_MAX - X_MIN
@@ -13,6 +15,7 @@ def generate_data():
     outputs = [x ** 2 + random.random() * NOISE * random.choice([-1, 1])
                for x in inputs]
     return pd.DataFrame({"X": inputs, "Y": outputs})
+
 
 if __name__ == "__main__":
     df = generate_data()

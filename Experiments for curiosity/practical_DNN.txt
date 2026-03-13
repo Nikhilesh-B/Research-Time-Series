@@ -1,0 +1,7 @@
+1. Feature scaling matters a lot, for convergence (consider x and x**2) espeically when you're doing feature engineering 
+2. ReLU is fudnamentally piece wise linear, which is what relu is doing (ReLU contiues to output somethingt hat is piecewise linear )
+3. A fudnamental limitation of learning outside of your domain is the activation fucntion and that it's only piece wise linear (so how do we generalize well to something that isn't in the high dimensional set of things we've already seen?)
+    4. KaNs replace fixed activations with learnable spline functions on each edge, they can in principle learn activations that behave like x**2 where needed
+4. The learning from the experimentation: 
+    i) Feature engineering is important; scaling those features in the appropriate way to make the loss landscape nice even more so
+    ii) You better hope that you're training data covers enough of ur distribution such that test data works well  
