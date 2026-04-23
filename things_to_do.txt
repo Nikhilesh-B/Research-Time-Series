@@ -1,6 +1,6 @@
 Louis:
-1. Move to real data 
-2. Ratio RMSE & MAE (relative to mean)
+1. Find real datasets to try on: FRED interest rates, and other real data sets. 
+2. Ratio RMSE & MAE (relative to mean) + add bar chart with plots of MAE, RMSE 
 3. Remove MSE
 
 Nikhilesh:
