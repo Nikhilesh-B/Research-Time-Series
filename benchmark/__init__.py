@@ -11,6 +11,9 @@ Usage::
 Heavy dependencies (statsmodels, TimesFM, etc.) are loaded only when you
 import the corresponding symbols, so ``from benchmark import TimeSeries`` stays
 lightweight.
+
+See ``BENCHMARK_USER_GUIDE.md`` in this package for a full user guide (notebook
+workflow, forecasters including Bayes AR / Minnesota, and programmatic usage).
 """
 
 from __future__ import annotations
