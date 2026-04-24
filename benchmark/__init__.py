@@ -4,7 +4,7 @@ Usage::
 
     from benchmark import (
         TimeSeries, SeriesRegistry,
-        MeanForecaster, ARIMAForecaster, SSAForecaster, TimesFMForecaster,
+        MeanForecaster, ARIMAForecaster, BayesianARForecaster, SSAForecaster, TimesFMForecaster,
         BenchmarkRunner, BenchmarkResults,
     )
 
@@ -28,12 +28,14 @@ __all__ = [
     "Forecaster",
     "MeanForecaster",
     "ARIMAForecaster",
+    "BayesianARForecaster",
     "SSAForecaster",
     "TimesFMForecaster",
 ]
 
 if TYPE_CHECKING:
     from benchmark.forecasters.arima import ARIMAForecaster
+    from benchmark.forecasters.bayesian_ar import BayesianARForecaster
     from benchmark.forecasters.base import Forecaster
     from benchmark.forecasters.mean import MeanForecaster
     from benchmark.forecasters.ssa import SSAForecaster
@@ -85,6 +87,12 @@ def __getattr__(name: str) -> Any:
         from benchmark.forecasters.arima import ARIMAForecaster as _ARIMAForecaster
 
         out = _ARIMAForecaster
+    elif name == "BayesianARForecaster":
+        from benchmark.forecasters.bayesian_ar import (
+            BayesianARForecaster as _BayesianARForecaster,
+        )
+
+        out = _BayesianARForecaster
     elif name == "SSAForecaster":
         from benchmark.forecasters.ssa import SSAForecaster as _SSAForecaster
 
