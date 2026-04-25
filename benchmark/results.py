@@ -61,11 +61,23 @@ class BenchmarkResults:
         return pd.DataFrame(rows)
 
     def summary(self) -> pd.DataFrame:
-        """One-row-per-model summary with MSE, MAE, RMSE."""
-        frames = [self.metrics(m) for m in METRIC_REGISTRY]
+        """One-row-per-model summary with MAE, RMSE, and ratios relative to Mean."""
+        frames = [self.metrics(m) for m in ["mae", "rmse"]]
         out = frames[0]
         for f in frames[1:]:
             out = out.merge(f, on="Forecaster")
+
+        # Add ratio columns relative to Mean
+        if "Mean" in out["Forecaster"].values:
+            mean_mae = out.loc[out["Forecaster"] == "Mean", "MAE"].iloc[0]
+            mean_rmse = out.loc[out["Forecaster"] == "Mean", "RMSE"].iloc[0]
+            out["Ratio MAE"] = out["MAE"] / mean_mae
+            out["Ratio RMSE"] = out["RMSE"] / mean_rmse
+        else:
+            # If no Mean, set ratios to NaN (undefined comparison)
+            out["Ratio MAE"] = np.nan
+            out["Ratio RMSE"] = np.nan
+
         return out
 
     # ------------------------------------------------------------------
@@ -203,17 +215,19 @@ class ReplicatedBenchmarkResults:
 
         Returns a DataFrame with columns
         ``["Forecaster", "<METRIC>_mean", "<METRIC>_std", ...]``
-        for every metric in the registry.
+        for all metrics in the summary.
         """
         from benchmark.metrics import METRIC_REGISTRY
 
         per_seed_summaries = [r.summary() for r in self.per_seed]
 
+        # Get all metric columns from the summary (excluding "Forecaster")
+        metric_columns = [col for col in per_seed_summaries[0].columns if col != "Forecaster"]
+
         rows = []
         for name in self.forecaster_names:
             row: dict[str, object] = {"Forecaster": name}
-            for metric_key in METRIC_REGISTRY:
-                col = metric_key.upper()
+            for col in metric_columns:
                 vals = np.array([
                     float(s.loc[s["Forecaster"] == name, col].iloc[0])
                     for s in per_seed_summaries
