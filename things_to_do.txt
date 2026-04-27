@@ -7,7 +7,7 @@ Nikhilesh:
 1. Quantile stats
 2. log-score (ask juan => what the simulation of; simulate and fit a kernel desnity)
 3. Recusrsive MSE to see breakdown of performance; (historical MSE)
-4. Bayesian AR model (another benchmark to add)
+4. Bayesian AR model (another benchmark to add) [DONE]
 
 
 Ice-box:
