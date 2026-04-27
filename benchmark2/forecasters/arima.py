@@ -8,7 +8,7 @@ import warnings
 import numpy as np
 from statsmodels.tsa.arima.model import ARIMA
 
-from benchmark.forecasters.base import Forecaster
+from benchmark2.forecasters.base import Forecaster
 
 _ARIMA_QUANTILE_LEVELS = np.linspace(0.1, 0.9, 9, dtype=np.float64)
 

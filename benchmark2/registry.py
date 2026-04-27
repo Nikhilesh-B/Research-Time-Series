@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from benchmark.series import TimeSeries
+from benchmark2.series import TimeSeries
 
 
 class SeriesRegistry:

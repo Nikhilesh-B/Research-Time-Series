@@ -20,7 +20,7 @@ import warnings
 import numpy as np
 from statsmodels.regression.linear_model import yule_walker
 
-from benchmark.forecasters.base import Forecaster
+from benchmark2.forecasters.base import Forecaster
 
 
 class SSAForecaster(Forecaster):

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from benchmark.forecasters.base import Forecaster
+from benchmark2.forecasters.base import Forecaster
 
 
 class MeanForecaster(Forecaster):

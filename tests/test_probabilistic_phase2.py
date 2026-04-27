@@ -6,7 +6,7 @@ import unittest
 
 import numpy as np
 
-from benchmark import probabilistic_metrics as pm
+from benchmark2 import probabilistic_metrics as pm
 
 
 def _scipy_available() -> bool:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from benchmark.forecasters.base import Forecaster
+from benchmark2.forecasters.base import Forecaster
 
 # TimesFM 2.5 returns last dim [mean, P10, P20, ..., P90] when quantile head on.
 _TIMESFM_DECILE_LEVELS = np.linspace(0.1, 0.9, 9, dtype=np.float64)

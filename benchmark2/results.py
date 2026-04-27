@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from benchmark.metrics import METRIC_REGISTRY, diebold_mariano_hac
+from benchmark2.metrics import METRIC_REGISTRY, diebold_mariano_hac
 from . import probabilistic_metrics as pm
 
 
@@ -391,7 +391,7 @@ class ReplicatedBenchmarkResults:
         ``["Forecaster", "<METRIC>_mean", "<METRIC>_std", ...]``
         for every metric in the registry.
         """
-        from benchmark.metrics import METRIC_REGISTRY
+        from benchmark2.metrics import METRIC_REGISTRY
 
         per_seed_summaries = [r.summary() for r in self.per_seed]
 
@@ -453,7 +453,7 @@ class ReplicatedBenchmarkResults:
 
         Returns a DataFrame with columns ``["seed", "Forecaster", "<METRIC>"]``.
         """
-        from benchmark.metrics import METRIC_REGISTRY
+        from benchmark2.metrics import METRIC_REGISTRY
 
         fn = METRIC_REGISTRY.get(metric)
         if fn is None:
@@ -482,7 +482,7 @@ class ReplicatedBenchmarkResults:
 
         The best model on each metric has ratio ``1.0``; larger is worse.
         """
-        from benchmark.metrics import mae, mse
+        from benchmark2.metrics import mae, mse
 
         pooled_actuals = np.concatenate([r.actuals.ravel() for r in self.per_seed])
         pooled_preds: dict[str, np.ndarray] = {

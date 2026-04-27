@@ -8,9 +8,9 @@ from typing import Callable
 
 import numpy as np
 
-from benchmark.forecasters.base import Forecaster
-from benchmark.results import BenchmarkResults, ReplicatedBenchmarkResults
-from benchmark.series import TimeSeries
+from benchmark2.forecasters.base import Forecaster
+from benchmark2.results import BenchmarkResults, ReplicatedBenchmarkResults
+from benchmark2.series import TimeSeries
 
 
 class BenchmarkRunner:
