@@ -30,6 +30,8 @@ Every forecaster subclasses **`Forecaster`**: implement **`fit(history)`** then 
 
 **`ReplicatedBenchmarkRunner`** draws a new series from a **DGP factory** `(seed) -> TimeSeries` for each seed, deep-copies forecasters per seed, and aggregates metrics across seeds. Use this when you care about performance **averaged over random realisations** of a process, not a single path.
 
+**`ReplicatedBenchmarkResults.replication_scorecard()`** returns a **wide** table (one row per forecaster): **MSE** and **MAE** for each seed, their **mean and std** across seeds, **pooled** MSE/MAE on all concatenated forecast errors, and **`rel_MSE_pooled`** / **`rel_MAE_pooled`** (ratio to the best pooled value on that metric, so the winner is `1.0`). For a long ``(seed, Forecaster, metric)`` layout, use **`per_seed_metric("mse")`** or **`per_seed_metric("mae")`**.
+
 ---
 
 ## 2. Interactive notebook workflow
@@ -136,14 +138,36 @@ Heavy imports (**`statsmodels`**, TimesFM, etc.) are loaded **lazily** when you 
 
 ---
 
-## 5. Metrics and tests
+## 5. Probabilistic evaluation (Phases 1–2)
+
+When a forecaster implements **`predict_quantiles(horizon)`**, the runner stores per-origin quantiles in **`BenchmarkResults.quantile_predictions`** (tensor ``(n_origins, Q, horizon)``) and **`quantile_levels`** per model. **TimesFM** exposes the library’s native P10–P90 fan (mean channel stripped for the quantile tensor).
+
+**Phase 1**
+
+- **`coverage_table()`**: long-format table of empirical **central-interval coverage** vs nominal (50\%, 80\%, 90\%, 95\% by default), with interpolation between reported quantiles. Models without quantiles appear with **Note = no quantiles**.
+- **`probabilistic_summary()`**: **CRPS** (integral of pinball loss on a dense τ grid), mean **90\% PI width**, and summed mean pinball losses.
+- **`plot_probabilistic_calibration(name)`**, **`plot_pit_histogram(name)`**: reliability and PIT histogram from the piecewise-linear CDF implied by quantiles.
+
+**Phase 2** (requires **[SciPy](https://scipy.org/)** for KDE; install alongside your environment, e.g. `pip install scipy`)
+
+- **`probabilistic_summary_phase2(nominal=0.9, ...)`**: per forecaster, **mean log score** from a **Gaussian KDE** fit to Monte Carlo samples drawn from the piecewise-linear quantile function (inverse-CDF sampling), plus **sharpness** (mean PI width at `nominal`) and **calibration** (empirical coverage vs nominal, and coverage error). If SciPy is missing, **`mean_log_score_kde`** is NaN and **`n_log_score_cells`** is 0.
+- **`plot_sharpness_vs_calibration(nominal)`**: scatter of mean PI width vs empirical coverage with a horizontal reference at the nominal coverage.
+
+**`ReplicatedBenchmarkResults.coverage_table()`** averages per-seed coverage statistics (mean ± std across seeds). **`ReplicatedBenchmarkResults.probabilistic_summary_phase2()`** aggregates the Phase 2 table across seeds (mean ± std per column); each seed uses an independent KDE RNG stream derived from **`random_state + seed`** when **`random_state`** is an int.
+
+Implementation: [`probabilistic_metrics.py`](probabilistic_metrics.py).
+
+
+---
+
+## 6. Metrics and tests
 
 - **Metrics** in **`summary()`**: **MSE**, **MAE**, **RMSE** (see [`metrics.py`](metrics.py)).
 - **`diebold_mariano(loss="se"|"ae")`**: pairwise comparison of loss sequences across origins; uses **HAC** standard errors.
 
 ---
 
-## 6. Tips
+## 7. Tips
 
 - If **`k_first`** is too large relative to series length **`n`**, you may get **no evaluation origins**; the runner raises a clear error.
 - For **`BayesianARForecaster`**, ensure **`len(history) > p`** at each origin; early origins with insufficient history yield **`NaN`** predictions for that model only.
