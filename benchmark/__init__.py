@@ -4,13 +4,16 @@ Usage::
 
     from benchmark import (
         TimeSeries, SeriesRegistry,
-        MeanForecaster, ARIMAForecaster, SSAForecaster, TimesFMForecaster,
+        MeanForecaster, ARIMAForecaster, BayesianARForecaster, SSAForecaster, TimesFMForecaster,
         BenchmarkRunner, BenchmarkResults,
     )
 
 Heavy dependencies (statsmodels, TimesFM, etc.) are loaded only when you
 import the corresponding symbols, so ``from benchmark import TimeSeries`` stays
 lightweight.
+
+See ``BENCHMARK_USER_GUIDE.md`` in this package for a full user guide (notebook
+workflow, forecasters including Bayes AR / Minnesota, and programmatic usage).
 """
 
 from __future__ import annotations
@@ -28,12 +31,14 @@ __all__ = [
     "Forecaster",
     "MeanForecaster",
     "ARIMAForecaster",
+    "BayesianARForecaster",
     "SSAForecaster",
     "TimesFMForecaster",
 ]
 
 if TYPE_CHECKING:
     from benchmark.forecasters.arima import ARIMAForecaster
+    from benchmark.forecasters.bayesian_ar import BayesianARForecaster
     from benchmark.forecasters.base import Forecaster
     from benchmark.forecasters.mean import MeanForecaster
     from benchmark.forecasters.ssa import SSAForecaster
@@ -85,6 +90,12 @@ def __getattr__(name: str) -> Any:
         from benchmark.forecasters.arima import ARIMAForecaster as _ARIMAForecaster
 
         out = _ARIMAForecaster
+    elif name == "BayesianARForecaster":
+        from benchmark.forecasters.bayesian_ar import (
+            BayesianARForecaster as _BayesianARForecaster,
+        )
+
+        out = _BayesianARForecaster
     elif name == "SSAForecaster":
         from benchmark.forecasters.ssa import SSAForecaster as _SSAForecaster
 
